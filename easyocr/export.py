@@ -4,6 +4,7 @@ import onnx
 import torch
 import easyocr
 import numpy as np
+from pathlib import Path
 from torch.utils.mobile_optimizer import optimize_for_mobile
 
 def export_detector(detector_onnx_save_path,
@@ -38,7 +39,8 @@ def export_detector(detector_onnx_save_path,
             y_torch_out, feature_torch_out = ocr_reader.detector(dummy_input)
 
             # export .torchscript.ptl'
-            fl = detector_onnx_save_path.with_suffix('.torchscript.ptl')
+            file = Path(detector_onnx_save_path)
+            fl = file.with_suffix('.torchscript.ptl')
             ts = torch.jit.trace(ocr_reader.detector, dummy_input, strict=False)
             optimize_for_mobile(ts)._save_for_lite_interpreter(str(fl))
 
