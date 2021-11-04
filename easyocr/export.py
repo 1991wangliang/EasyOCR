@@ -40,8 +40,10 @@ def export_detector(detector_onnx_save_path,
 
             # export .torchscript.ptl'
             file = Path(detector_onnx_save_path)
+            f = file.with_suffix('.torchscript.pt')
             fl = file.with_suffix('.torchscript.ptl')
             ts = torch.jit.trace(ocr_reader.detector, dummy_input, strict=False)
+            optimize_for_mobile(ts).save(f)
             optimize_for_mobile(ts)._save_for_lite_interpreter(str(fl))
 
             torch.onnx.export(ocr_reader.detector,
